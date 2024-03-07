@@ -3,7 +3,7 @@
 #include <string>
 
 using namespace std;
-
+// Test circuts are named Circuit 1 (C1), etc...
 // Function to read library file
 void readLibraryFile(const string& filename, string& componentName, int& numInputs, string& outputExpression, int& delayPs) {
     ifstream file(filename);
