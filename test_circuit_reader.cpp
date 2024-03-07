@@ -1,4 +1,6 @@
 //Done by Ahmed Elkhodary
+//ID 900213472
+//Group 5, Section 2
 // Test circuts are named Circuit 1 (C1), etc...
 #include <iostream>
 #include <fstream>
