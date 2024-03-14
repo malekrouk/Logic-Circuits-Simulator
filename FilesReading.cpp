@@ -73,3 +73,33 @@ void FilesReading::ReadCirFile(string s)
 
 
 }
+
+void FilesReading::ReadStimFile(string s)
+{
+	ifstream FileOpen;
+	FileOpen.open(s);
+	string temp;
+	while (!FileOpen.eof())
+	{
+		FileOpen >> temp;
+		temp.erase(remove(temp.begin(), temp.end(), ','), temp.end());
+		stim.addDelay(stoi(temp));
+
+		FileOpen >> temp;
+		temp.erase(remove(temp.begin(), temp.end(), ','), temp.end());
+		stim.addInputVariable(temp[0]);
+
+		FileOpen >> temp;
+		temp.erase(remove(temp.begin(), temp.end(), ','), temp.end());
+		bool x=false;
+		if (temp == "1")
+		{
+			x = true;
+		}
+		stim.addStatus(x);
+
+
+	}
+
+
+}
