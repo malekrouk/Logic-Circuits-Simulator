@@ -9,9 +9,10 @@ class FilesReading
 public:
 	LibStruct Lib;
 	CircuitStruct cir;
+	StimStruct stim;
 	void ReadLibFile(string s);
 	void ReadCirFile(string s);
-	
+	void ReadStimFile(string s);
 
 };
 
