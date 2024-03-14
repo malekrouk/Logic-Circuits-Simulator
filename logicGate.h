@@ -1,3 +1,4 @@
+/*
 #ifndef LOGICGATE_H
 #define LOGICGATE_H
 

@@ -1,3 +1,4 @@
+/*
 #include "logicGate.h"
 #include <unistd.h>
 
