@@ -1,7 +1,23 @@
 #pragma once
+#include<iostream>
 #include<vector>;
 #include<string>
 using namespace std;
+
+struct LogicGate
+{
+	string name;
+	string type;
+	string logic;
+	vector<string> inputNames;
+	vector<bool> inputs;
+	string OutputName;
+	bool result;
+
+
+};
+
+
 struct LibStruct
 {
 	std::vector<std::string> GatesNames;
@@ -24,10 +40,24 @@ struct LibStruct
 	{
 		Delay.push_back(x);
 	}
+
+	void PrintLib()
+	{
+
+
+		for (int i = 0; i < GatesNames.size(); i++)
+		{
+			cout << GatesNames[i] << "  Input variables = " << InputNum[i] << "   Logic = " << Logic[i] << "   Delay = " << Delay[i] << endl;
+		}
+		cout << GatesNames.size() << "  " << InputNum.size() << "  " << Logic.size() << "  " << Delay.size() << endl;
+
+
+	}
 };
 
 struct CircuitStruct
 {
+	vector<string> logic;
 	vector<char> Inputs;
     vector<string> componentName;
 	vector<string> type;
@@ -53,24 +83,47 @@ struct CircuitStruct
 	{
 		GateInputs.push_back(s);
 	}
+
+	void PrintCir()
+	{
+		for (int i = 0; i < componentName.size(); i++)
+		{
+			cout << componentName[i] << "  " << type[i] << "   " << output[i] << "   ";
+			for (int j = 0; j < GateInputs.size(); j++)
+			{
+				cout << GateInputs[i][j] << "  ";
+			}
+			cout << endl;
+		}
+		cout << this->type.size() <<"  "<< output.size() <<"  "<< componentName.size() <<"  "<< Inputs.size() <<"  "<<GateInputs.size()<<endl;
+	}
 	
 };
 struct StimStruct
 {
 	vector<int> Delay;
-	vector<char> inputVariables;
+	vector<string> inputVariables;
 	vector<bool> status;
 	void addDelay(int x)
 	{
 		Delay.push_back(x);
 	}
-	void addInputVariable(char c)
+	void addInputVariable(string c)
 	{
 		inputVariables.push_back(c);
 	}
 	void addStatus(bool x)
 	{
 		status.push_back(x);
+	}
+
+	void PrintSim()
+	{
+		for (int i = 0; i < Delay.size(); i++)
+		{
+			cout << Delay[i] << "  " << inputVariables[i] << "  " << status[i] << endl;
+		}
+		cout << Delay.size() << "  " << inputVariables.size() << "  " << status.size() << endl;
 	}
 
 };
