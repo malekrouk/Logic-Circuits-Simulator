@@ -1,185 +1,172 @@
-#include<iostream>
-#include"FilesReading.h"
-#include"Structs.h"
-#include"GateSimulator.h"
-using namespace std;
+#include "FilesReading.h"
+#include <iostream>
 
-
-struct LogicGate
+void FilesReading::ReadLibFile(string s)
 {
-	string name;
-	string type;
-	string logic;
-	vector<string> inputNames;
-	vector<bool> inputs;
-	string OutputName;
-	bool result;
-
-};
-
-void getLogic(LibStruct lib, LogicGate s)
-{
-	for (int i = 0; i < lib.GatesNames.size(); i++)
+	ifstream LibFile;
+	LibFile.open(s);
+	while (!LibFile.eof())
 	{
-		if (s.type == lib.GatesNames[i])
-		{
-			s.logic = lib.Logic[i];
-		}
+		string temp;
+		LibFile >> temp;
+		temp.erase(remove(temp.begin(), temp.end(), ','), temp.end());
+		FilesReading::Lib.addGateName(temp);
+		LibFile >> temp;
+		temp.erase(remove(temp.begin(), temp.end(), ','), temp.end());
+		Lib.addInputNum(stoi(temp));
+		LibFile >> temp;
+		temp.erase(remove(temp.begin(), temp.end(), ','), temp.end());
+		Lib.addLogic(temp);
+		LibFile >> temp;
+		temp.erase(remove(temp.begin(), temp.end(), ','), temp.end());
+		Lib.addDelay(stoi(temp));
+
 	}
+
+
 }
-int main()
+
+void FilesReading::ReadCirFile(string s)
 {
-	FilesReading test;
-	string libFileName = "C:/Users/mosta/Desktop/AUC/DD1/Project/TestCircuit_4/Circuit_4_LIB.lib";
-	string cirFileName = "C:/Users/mosta/Desktop/AUC/DD1/Project/TestCircuit_4/Circuit_4_CIR.cir";
-	string stimFileName = "C:/Users/mosta/Desktop/AUC/DD1/Project/TestCircuit_4/Circuit_4_STIM.stim";
+	ifstream CirFile;
+	CirFile.open(s);
+	string temp;
+	getline(CirFile, temp);
+	CirFile >> temp;
 
-	/*ifstream hh;
-	hh.open(libFileName);
-	cout << hh.is_open();*/
-
-
-
-
-	test.ReadLibFile(libFileName);
-	//for (int i = 0; i < 4; i++)
-	//{
-	//	cout << test.Lib.InputNum[i] << endl;
-	//}
-	test.ReadCirFile(cirFileName);
-	test.ReadStimFile(stimFileName);
-
-
-	/*for (int i = 0; i < test.stim.Delay.size(); i++)
+	while (temp != "COMPONENTS:")
 	{
-		cout << test.stim.Delay[i]<<endl;
-	}
-
-	cout << endl;
-
-	for (int i = 0; i < test.cir.Inputs.size(); i++)
-	{
-		cout << test.cir.Inputs[i]<<endl;
-	}
-	cout << endl << endl;
-	for (int i = 0; i < test.cir.componentName.size(); i++)
-	{
-		cout << test.cir.componentName[i]<<endl;
-	}*/
-
-
-
-	vector<LogicGate> hello;
-	for (int i = 0; i < test.cir.componentName.size();i++)
-	{
-		LogicGate testing1;
-		testing1.name = test.cir.componentName[i];
-		testing1.type = test.cir.type[i];
-		testing1.inputNames = test.cir.GateInputs[i];
-		getLogic(test.Lib, testing1);
-		testing1.OutputName = test.cir.output[i];
-		hello.push_back(testing1);
+		CirFile >> temp;
+		FilesReading::cir.addInput(temp[0]);
 	}
 
 
-
-	//for (int i = 0; i < hello.size(); i++)
-	//{
-	//	cout << hello[i].type<<endl;
-	//}
-
-
-
-	//for (int j = 0; j < test.stim.inputVariables.size(); j++)
-	//{
-	//	cout << test.stim.inputVariables[j];
-	//}
-
-
-	for (int i = 0; i < hello.size(); i++)
+	while (!CirFile.eof())
 	{
-		for (int j = 0; j < test.stim.inputVariables.size(); j++)
+
+		LogicGate x;
+		int inputCounter = 1;
+		CirFile >> temp;
+		temp.erase(remove(temp.begin(), temp.end(), ','), temp.end());
+
+		x.name = temp;
+		cir.addComponentName(temp);
+
+
+		CirFile >> temp;
+		temp.erase(remove(temp.begin(), temp.end(), ','), temp.end());
+
+		if ((temp[temp.size() - 1] <= 57) && (temp[temp.size() - 1] >= 48))
+			inputCounter = (temp[temp.size() - 1]) - '0';
+
+
+		x.type = temp;
+
+		for (int i = 0; i < Lib.GatesNames.size(); i++)
 		{
-			string s1 = "";
-			s1 += test.stim.inputVariables[j];
-
-			if (hello[i].inputNames[0] == s1)
-				 hello[i].inputs.push_back(test.stim.status[j]);
-
-			if (hello[i].inputNames[1] == s1)
-				hello[i].inputs.push_back(test.stim.status[j]); 
-		}
-	}
-
-
-	for (int k = 0; k < hello.size(); k++)
-	{
-		for (int i = 0; i < hello.size(); i++)
-		{
-			if (hello[i].inputNames.size() == hello[i].inputs.size())
+			if (Lib.GatesNames[i] == temp)
 			{
-				LogicGateExpressionEvaluator evaluate;
-				hello[i].result = evaluate.evaluateExpression(hello[i].logic, hello[i].inputs[0], hello[i].inputs[1]);
-
-				//cout<< evaluate.evaluateExpression(hello[i].logic, hello[i].inputs[0], hello[i].inputs[1])<<"  ";
-
-				for (int j = 0; j < hello.size(); j++)
-				{
-					for (int z = 0; z < hello[j].inputs.size(); z++)
-					{
-						if (hello[i].OutputName == hello[j].inputNames[z])
-						{
-							hello[j].inputs[z] = hello[i].result;
-						//	cout << hello[j].inputs[z] << "  ";
-						}
-					}
-				}
+				cir.logic.push_back(Lib.Logic[i]);
+				x.logic = Lib.Logic[i];
+				break;
 			}
 		}
-	}
 
 
 
-	for (int i = 0; i < hello.size(); i++)
-	{
-		cout << hello[i].name << "  " << hello[i].type << "  " << hello[i].logic << "  ";
-		for (int j = 0; j < hello[i].inputNames.size(); j++)
+		cir.addType(temp);
+		CirFile >> temp;
+		temp.erase(remove(temp.begin(), temp.end(), ','), temp.end());
+
+		x.OutputName = temp;
+		cir.addOutput(temp);
+
+		vector<string> soy;
+		while (inputCounter != 0)
 		{
-			cout << hello[i].inputNames[j];
+			CirFile >> temp;
+			temp.erase(remove(temp.begin(), temp.end(), ','), temp.end());
+			inputCounter--;
+			soy.push_back(temp);
 		}
+		cir.addGateInput(soy);
+		x.inputNames = soy;
+		for (int i = 0; i < soy.size(); i++)
+		{
+			x.inputs.push_back(0);
+		}
+		gates.push_back(x);
 	}
-	//for (int i = 0; i < hello.size(); i++)
-	//{
 
-	//	cout << hello[i].name << "  " << hello[i].type << "  " << hello[i].logic << "  ";
-	//	for (int j = 0; j < hello[i].inputs.size(); j++)
-	//	{
-	//		cout << hello[i].inputNames[j] << " " << hello[i].inputs[j]<<"      ";
-	//	}
-	//	cout << hello[i].OutputName << " " << hello[i].result<<"   ";
-	//	cout << endl;
-	//}
 
-	//cout << hello[1].result;
+
+}
+
+void FilesReading::ReadStimFile(string s)
+{
+	ifstream FileOpen;
+	FileOpen.open(s);
+	string temp;
+	while (!FileOpen.eof())
+	{
+		FileOpen >> temp;
+		temp.erase(remove(temp.begin(), temp.end(), ','), temp.end());
+		stim.addDelay(stoi(temp));
+
+		FileOpen >> temp;
+		temp.erase(remove(temp.begin(), temp.end(), ','), temp.end());
+		stim.addInputVariable(temp);
+
+		FileOpen >> temp;
+		temp.erase(remove(temp.begin(), temp.end(), ','), temp.end());
+		bool x=false;
+		if (temp == "1")
+		{
+			x = true;
+		}
+		stim.addStatus(x);
+
+
+	}
+
+
+
+
+
 	
 
 
-	/*LogicGateExpressionEvaluator evaluate;
-	bool i1, i2;
-	i1 = test.stim.status[0];
-	i2 = test.stim.status[1];
-	string expression;
+}
 
-	i1 = false;
-	i2 = false;
-	expression = "i1&~i2";
-	cout << "Result of " << expression << " with i1=" << i1 << " and i2=" << i2 << " is: " << evaluate.evaluateExpression(expression, i1, i2) << std::endl;
+void FilesReading::PrintLib()
+{
+	Lib.PrintLib();
+}
 
-	expression = "~(i1|i2)";
-	std::cout << "Result of " << expression << " with i1=" << i1 << " and i2=" << i2 << " is: " << evaluate.evaluateExpression(expression, i1, i2) << std::endl;
 
-	expression = "i1&i2|~i1";
-	std::cout << "Result of " << expression << " with i1=" << i1 << " and i2=" << i2 << " is: " << evaluate.evaluateExpression(expression, i1, i2) << std::endl;*/
+void FilesReading::PrintCir()
+{
+	cir.PrintCir();
+}
+
+void FilesReading::PrintStim()
+{
+	stim.PrintSim();
+}
+
+void FilesReading::PrintGates()
+{
+	for (int i = 0; i < gates.size(); i++)
+	{
+		cout << gates[i].name << "  " << gates[i].type << "  " << gates[i].logic << "  " << gates[i].OutputName << "  ";
+		for (int j = 0;j < gates[i].inputNames.size(); j++)
+		{
+			cout << gates[i].inputNames[j]<<"  ";
+		}
+		cout << "Output : " << gates[i].result;
+		cout << endl<<endl;
+	}
 
 
 }
+
