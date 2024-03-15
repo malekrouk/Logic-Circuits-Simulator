@@ -10,9 +10,14 @@ public:
 	LibStruct Lib;
 	CircuitStruct cir;
 	StimStruct stim;
+	vector<LogicGate> gates;
 	void ReadLibFile(string s);
 	void ReadCirFile(string s);
 	void ReadStimFile(string s);
+	void PrintLib();
+	void PrintCir();
+	void PrintStim();
+	void PrintGates();
 
 };
 
