@@ -1,41 +1,90 @@
 #include<iostream>
 #include"FilesReading.h"
 #include"Structs.h"
+#include"GateSimulator.h"
 using namespace std;
+
+
+
+
+void getLogic(LibStruct lib, LogicGate s)
+{
+	for (int i = 0; i < lib.GatesNames.size(); i++)
+	{
+		if (s.type == lib.GatesNames[i])
+		{
+			s.logic = lib.Logic[i];
+		}
+	}
+}
+
+bool evaluateGate(string s, bool x, bool y)
+{
+	LogicGateExpressionEvaluator evaluate;
+	return evaluate.evaluateExpression(s, x, y);
+}
 int main()
 {
 	FilesReading test;
-	string libFileName = "C:/Users/mosta/Desktop/AUC/DD1/Project/TestCircuit_2/Circuit_2_LIB.lib";
-	string cirFileName = "C:/Users/mosta/Desktop/AUC/DD1/Project/TestCircuit_2/Circuit_2_CIR.cir";
-	string stimFileName = "C:/Users/mosta/Desktop/AUC/DD1/Project/TestCircuit_2/Circuit_2_STIM.stim";
+	string libFileName = "C:/Users/mosta/Desktop/AUC/DD1/Project/TestCircuit_4/Circuit_4_LIB.lib";
+	string cirFileName = "C:/Users/mosta/Desktop/AUC/DD1/Project/TestCircuit_4/Circuit_4_CIR.cir";
+	string stimFileName = "C:/Users/mosta/Desktop/AUC/DD1/Project/TestCircuit_4/Circuit_4_STIM.stim";
 
-	ifstream hh;
+
+
 	test.ReadLibFile(libFileName);
-
-	//for (int i = 0; i < 4; i++)
-	//{
-	//	cout << test.Lib.InputNum[i] << endl;
-	//}
 	test.ReadCirFile(cirFileName);
-
 	test.ReadStimFile(stimFileName);
 
-
-	/*for (int i = 0; i < test.stim.Delay.size(); i++)
+	test.PrintLib();
+	test.PrintCir();
+	test.PrintStim();
+	test.PrintGates();
+	for (int i = 0; i < test.gates.size(); i++)
 	{
-		cout << test.stim.Delay[i]<<endl;
+		int counter = 0;
+		for (int j = 0; j < test.gates[i].inputNames.size(); j++)
+		{
+		
+
+			for (int k = 0; k < test.stim.inputVariables.size(); k++)
+			{
+				if (test.gates[i].inputNames[j] == test.stim.inputVariables[k])
+				{
+					test.gates[i].inputs[j] = test.stim.status[k];
+					counter++;
+					if (counter == test.gates[i].inputs.size())
+					{
+						test.gates[i].result = evaluateGate(test.gates[i].logic, test.gates[i].inputs[0], test.gates[i].inputs[1]);
+						test.stim.addInputVariable(test.gates[i].OutputName);
+						test.stim.addStatus(test.gates[i].result);
+					}
+				}
+			}
+			
+		}
 	}
+	test.PrintGates();
 
-	cout << endl;
-
-	for (int i = 0; i < test.cir.Inputs.size(); i++)
+	/*for (int z = 0; z < test.gates[i].inputNames.size(); z++)
 	{
-		cout << test.cir.Inputs[i]<<endl;
+		if (test.gates[i].inputNames[z] == test.stim.inputVariables[j])
+		{
+			test.gates[i].inputs.push_back(test.stim.status[j]);
+			counter++;
+		}
 	}
-	cout << endl << endl;
-	for (int i = 0; i < test.cir.componentName.size(); i++)
+	if (test.gates[i].inputNames.size() == counter)
 	{
-		cout << test.cir.componentName[i]<<endl;
+
+		test.gates[i].result = evaluateGate(test.gates[i].logic, );
+		for (int l = 0; l < test.gates.size(); l++)
+		{
+			if (test.gates[l].)
+		}
 	}*/
+
+	
+
 
 }
