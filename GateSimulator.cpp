@@ -1,20 +1,19 @@
-//
-// Created by Malek farouk on 14/03/2024.
-//
 #include <iostream>
 #include <stack>
 #include <string>
+#include <vector>
+#include <cctype>
 using namespace std;
 
 class LogicGateExpressionEvaluator {
 private:
     int precedence(char c) {
-        switch(c) {
-            case '&': //2nd highest precedence
+        switch (c) {
+            case '&': // 2nd highest precedence
                 return 2;
-            case '|': //lowest precedence
+            case '|': // lowest precedence
                 return 1;
-            case '~': //highest precedence
+            case '~': // highest precedence
                 return 3;
             default:
                 return -1;
@@ -32,131 +31,152 @@ private:
 
         //loop over every char in infix expression
         for (char c : infix) {
-            if (isOperator(c)) {
-                //process operators and manage precedence
-                while (!st.empty() && st.top() != '(' && precedence(st.top()) >= precedence(c)) {
-                    postfix += st.top(); //add operators from the stack to the postfix expression if they have higher or equal precedence
-                    st.pop(); //pop the operators from the stack
+            if (isdigit(c)) { //check if the character is a digit (variable name)
+                postfix += c; //add it to the postfix expression
+            } else if (c == '(') {
+                st.push(c); //push onto stack if c=(
+            } else if (c == ')') {
+                while (!st.empty() && st.top() != '(') {
+                    postfix += st.top(); //add from the top of the stack to the post fix expression until you meet '('
+                    st.pop();
+                }
+                if (!st.empty() && st.top() == '(') {
+                    st.pop(); // Remove '(' from the stack
+                }
+            } else if (isOperator(c)) { //if the character is a variable
+                while (!st.empty() && precedence(st.top()) >= precedence(c)) {
+                    postfix += st.top();// add operators from the stack if they have higher or equal precedence
+                    st.pop();
                 }
                 st.push(c);
-            } else if (c == '(') {
-                st.push(c); //push ( onto the stack
-            } else if (c == ')') {
-
-                while (!st.empty() && st.top() != '(') {
-                    postfix += st.top(); //add operators until an opening parenthesis is found
-                    st.pop(); //pop the operators from the stack
-                }
-                st.pop(); //remove opening parenthesis
-            } else { //if the character is a variable
-                postfix += c; // add the variable to the postfix expression
             }
         }
-
-        //remaining operators on the stack
+        //add remaining operators to the postfix expression
         while (!st.empty()) {
-            postfix += st.top(); // add operators to the postfix expression
-            st.pop(); //pop the operators from the stack
+            postfix += st.top();
+            st.pop();
         }
 
         return postfix;
     }
 
+    //evaluate postfix expression
+    bool evaluatePostfix(const string& postfix, const vector<bool>& variables) {
+        stack<bool> st; //hold variables
 
-    bool evaluatePostfix(const string& postfix, bool i1, bool i2) {
-        stack<bool> st; //stack to hold the variables during evaluation
-        bool insideParentheses = false;
-
-        //loop over each character in the postfix expression
+        //loop over every char in postfix expression
         for (char c : postfix) {
-            if (c == '(') {
-                insideParentheses = true;
-            } else if (c == ')') {
-                insideParentheses = false;
-            } else if (!isOperator(c)) { //if the character is a variable
-
-                bool value = (c == '1');
-                if (value) { //variable c is true
-                    st.push(i1);
-                } else {
-                    st.push(i2);
+            if (c == '~') {
+                //apply negation to the top variable
+                if (!st.empty()) {
+                    bool variable = st.top();
+                    st.pop();
+                    st.push(!variable);
                 }
-            } else { //if the character is a operator
-                if (c == '~') {
-                    if (insideParentheses) {
-                        //negate the entire subexpression within parentheses
-                        while (!st.empty() && st.top() != '(') {
-                            bool variable = st.top();
-                            st.pop();
-                            st.push(!variable);
-                        }
-                        //pop (
-                        if (!st.empty() && st.top() == '(') {
-                            st.pop();
-                        }
-                    } else { //not inside parentheses
-                        //negate the top variable
-                        if (!st.empty()) {
-                            bool variable = st.top();
-                            st.pop();
-                            st.push(!variable);
-                        }
-                    }
-                } else { //if the operator is (AND or OR)
-
-                    if (!st.empty()) {
-                        bool variable2 = st.top(); //second variable
-                        st.pop(); // Pop the second variable from the stack
-                        if (!st.empty()) {
-                            bool variable1 = st.top(); //first variable
-                            st.pop();
-                            switch (c) {
-                                case '&':
-                                    st.push(variable1 && variable2); //push result of AND operation onto the stack
-                                    break;
-                                case '|':
-                                    st.push(variable1 || variable2); //push result of OR operation onto the stack
-                                    break;
-                            }
-                        }
-                    }
+            } else if (isOperator(c)) {
+                //evaluate the operation
+                if (st.size() < 2) {
+                    //insufficient number of variables in the stack
+                    return false;
                 }
+                bool variable2 = st.top();
+                st.pop();
+                bool variable1 = st.top();
+                st.pop();
+                switch (c) {
+                    case '&':
+                        st.push(variable1 && variable2);
+                        break;
+                    case '|':
+                        st.push(variable1 || variable2);
+                        break;
+                }
+            } else if (isdigit(c)) { //check if the character is a digit (variable name)
+                int idx = c - '0'; //convert to int (assuming variables are named as i1, i2, i3...)
+                //subtracting by ASCII value
+                if (idx < 1 || idx > variables.size()) {
+                    //invalid variable index
+                    return false;
+                }
+                st.push(variables[idx - 1]); //push variable name onto stack
             }
         }
 
-        //return result of expression if the stack is not empty
-        if(!st.empty())
-            return st.top();
-            else
-                return false;
+        if (st.size() != 1) {
+            return false;
+        }
 
+        return st.top();
     }
-
-
 
 public:
-    bool evaluateExpression(const string& expression, bool i1, bool i2) {
+    //evaluate infix boolean expression
+    bool evaluateExpression(const string& expression, const vector<bool>& variables) {
         string postfix = infixToPostfix(expression);
-        return evaluatePostfix(postfix, i1, i2);
+        return evaluatePostfix(postfix, variables);
     }
-};
 
+};
+//int main written by chatgpt to test code
 int main() {
     LogicGateExpressionEvaluator evaluate;
 
-    bool i1, i2;
-    string expression;
+    string expression = "(i1&~i2)|~(i3&~i4)";
+    int num_variables = 4; // Up to i4
 
-    i1 = false;
-    i2 = false;
-    expression = "i1&~i2";
-    cout << "Result of " << expression << " with i1=" << i1 << " and i2=" << i2 << " is: " << evaluate.evaluateExpression(expression, i1, i2) << std::endl;
+    vector<bool> inputs(num_variables);
+    // Setting values for i1, i2, i3, and i4
+    inputs[0] = true;
+    inputs[1] = true;
+    inputs[2] = true;
+    inputs[3] = false;
 
-    expression = "~(i1|i2)";
-    std::cout << "Result of " << expression << " with i1=" << i1 << " and i2=" << i2 << " is: " << evaluate.evaluateExpression(expression, i1, i2) << std::endl;
 
-    expression = "i1&i2|~i1";
-    std::cout << "Result of " << expression << " with i1=" << i1 << " and i2=" << i2 << " is: " << evaluate.evaluateExpression(expression, i1, i2) << std::endl;
+    // Test expression 1
+    expression = "(i1&~i2)|~(i3&~i4)";
+
+    cout << "Testing expression 1: " << expression << endl;
+    cout << "With inputs:";
+    for (bool val : inputs) {
+        cout << " " << val;
+    }
+    cout << endl;
+    bool result1 = evaluate.evaluateExpression(expression, inputs);
+    cout << "Result: " << (result1 ? "true" : "false") << endl;
+
+    // Test expression 2
+    expression = "(i1|i2)&~(i3|i4)";
+    cout << "Testing expression 2: " << expression << endl;
+    cout << "With inputs:";
+    for (bool val : inputs) {
+        cout << " " << val;
+    }
+    cout << endl;
+    bool result2 = evaluate.evaluateExpression(expression, inputs);
+    cout << "Result: " << (result2 ? "true" : "false") << endl;
+
+    // Test expression 3
+    expression = "i1&i2&i3&i4";
+    cout << "Testing expression 3: " << expression << endl;
+    cout << "With inputs:";
+    for (bool val : inputs) {
+        cout << " " << val;
+    }
+    cout << endl;
+    bool result3 = evaluate.evaluateExpression(expression, inputs);
+    cout << "Result: " << (result3 ? "true" : "false") << endl;
+
+    // Test expression 4
+    expression = "~i1&~i2&~i3&~i4";
+
+    cout << "Testing expression 4: " << expression << endl;
+    cout << "With inputs:";
+    for (bool val : inputs) {
+        cout << " " << val;
+    }
+    cout << endl;
+    bool result4 = evaluate.evaluateExpression(expression, inputs);
+    cout << "Result: " << (result4 ? "true" : "false") << endl;
 
     return 0;
 }
