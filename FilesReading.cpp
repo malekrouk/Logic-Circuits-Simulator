@@ -174,7 +174,12 @@ void FilesReading::ReadStimFile(string s)
 			x = true;
 		}
 		stim.addStatus(x);
-
+		if (x == true)
+		{
+			stim.changed.push_back(true);
+		}
+		else
+			stim.changed.push_back(false);
 
 	}
 
