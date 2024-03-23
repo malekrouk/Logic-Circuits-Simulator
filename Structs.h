@@ -4,7 +4,7 @@
 #include<string>
 using namespace std;
 
-struct LogicGate
+struct LogicGate   //struct for the logic gates
 {
 	string name;
 	string type;
@@ -20,13 +20,13 @@ struct LogicGate
 };
 
 
-struct LibStruct
+struct LibStruct           //struct to store data from Lib file
 {
-	std::vector<std::string> GatesNames;
+	std::vector<std::string> GatesNames;    //vectors to store different data
 	std::vector<int> InputNum;
 	std::vector<std::string> Logic;
 	std::vector<int> Delay;
-	void addGateName(std::string s)
+	void addGateName(std::string s)   //function to add a gate name to the appropriate vector
 	{
 		GatesNames.push_back(s);
 	}
@@ -43,7 +43,7 @@ struct LibStruct
 		Delay.push_back(x);
 	}
 
-	void PrintLib()
+	void PrintLib()   //function to print out the contents of the lib struct
 	{
 
 
@@ -57,7 +57,7 @@ struct LibStruct
 	}
 };
 
-struct CircuitStruct
+struct CircuitStruct   //struct to store data obtained from the cir file into vectors
 {
 	vector<string> logic;
 	vector<char> Inputs;
@@ -86,7 +86,7 @@ struct CircuitStruct
 		GateInputs.push_back(s);
 	}
 
-	void PrintCir()
+	void PrintCir()   //function to print the contents of the struct
 	{
 		//cout << "HELLO  " << GateInputs.size() << "    " << componentName.size()<<endl;
 		for (int i = 0; i < componentName.size(); i++)
@@ -102,7 +102,7 @@ struct CircuitStruct
 	}
 	
 };
-struct StimStruct
+struct StimStruct   //struct to store data from stim file into vectors 
 {
 	vector<int> Delay;
 	vector<string> inputVariables;
