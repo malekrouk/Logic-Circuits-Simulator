@@ -13,6 +13,8 @@ struct LogicGate
 	vector<bool> inputs;
 	string OutputName;
 	bool result;
+	int timeStamp=-1;
+	int delay=-1;
 
 
 };
@@ -86,10 +88,11 @@ struct CircuitStruct
 
 	void PrintCir()
 	{
+		//cout << "HELLO  " << GateInputs.size() << "    " << componentName.size()<<endl;
 		for (int i = 0; i < componentName.size(); i++)
 		{
 			cout << componentName[i] << "  " << type[i] << "   " << output[i] << "   ";
-			for (int j = 0; j < GateInputs.size(); j++)
+			for (int j = 0; j < GateInputs[i].size(); j++)
 			{
 				cout << GateInputs[i][j] << "  ";
 			}
