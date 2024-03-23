@@ -7,8 +7,7 @@ using namespace std;
 
 
 // Merge function for StimStruct object based on Delay
-void merge(StimStruct& stim, int left, int mid, int right)                 //
-{
+void merge(StimStruct& stim, int left, int mid, int right) {
 	int n1 = mid - left + 1; // Size of left subarray
 	int n2 = right - mid;     // Size of right subarray
 
@@ -16,32 +15,37 @@ void merge(StimStruct& stim, int left, int mid, int right)                 //
 	vector<int> L_Delay(n1), R_Delay(n2);
 	vector<string> L_inputVariables(n1), R_inputVariables(n2);
 	vector<bool> L_status(n1), R_status(n2);
+	vector<bool> L_changed(n1), R_changed(n2); // New vector for changed
 
 	// Copy data to temporary vectors
 	for (int i = 0; i < n1; i++) {
 		L_Delay[i] = stim.Delay[left + i];
 		L_inputVariables[i] = stim.inputVariables[left + i];
 		L_status[i] = stim.status[left + i];
+		L_changed[i] = stim.changed[left + i]; // Copy changed elements
 	}
 	for (int j = 0; j < n2; j++) {
 		R_Delay[j] = stim.Delay[mid + 1 + j];
 		R_inputVariables[j] = stim.inputVariables[mid + 1 + j];
 		R_status[j] = stim.status[mid + 1 + j];
+		R_changed[j] = stim.changed[mid + 1 + j]; // Copy changed elements
 	}
 
-	// Merge the temporary vectors back into stim.Delay, stim.inputVariables, and stim.status
+	// Merge the temporary vectors back into stim.Delay, stim.inputVariables, stim.status, and stim.changed
 	int i = 0, j = 0, k = left;
 	while (i < n1 && j < n2) {
 		if (L_Delay[i] <= R_Delay[j]) {
 			stim.Delay[k] = L_Delay[i];
 			stim.inputVariables[k] = L_inputVariables[i];
 			stim.status[k] = L_status[i];
+			stim.changed[k] = L_changed[i]; // Swap corresponding changed element
 			i++;
 		}
 		else {
 			stim.Delay[k] = R_Delay[j];
 			stim.inputVariables[k] = R_inputVariables[j];
 			stim.status[k] = R_status[j];
+			stim.changed[k] = R_changed[j]; // Swap corresponding changed element
 			j++;
 		}
 		k++;
@@ -52,6 +56,7 @@ void merge(StimStruct& stim, int left, int mid, int right)                 //
 		stim.Delay[k] = L_Delay[i];
 		stim.inputVariables[k] = L_inputVariables[i];
 		stim.status[k] = L_status[i];
+		stim.changed[k] = L_changed[i]; // Copy remaining changed element
 		i++;
 		k++;
 	}
@@ -61,6 +66,7 @@ void merge(StimStruct& stim, int left, int mid, int right)                 //
 		stim.Delay[k] = R_Delay[j];
 		stim.inputVariables[k] = R_inputVariables[j];
 		stim.status[k] = R_status[j];
+		stim.changed[k] = R_changed[j]; // Copy remaining changed element
 		j++;
 		k++;
 	}
@@ -106,9 +112,9 @@ int main()
 
 
 	FilesReading test;
-	string libFileName = "C:/Users/mosta/Desktop/AUC/DD1/Project/TestCircuit_2/Circuit_2_LIB.lib";
-	string cirFileName = "C:/Users/mosta/Desktop/AUC/DD1/Project/TestCircuit_2/Circuit_2_CIR.cir";
-	string stimFileName ="C:/Users/mosta/Desktop/AUC/DD1/Project/TestCircuit_2/Circuit_2_STIM.stim";
+	string libFileName = "C:/Users/mosta/Desktop/AUC/DD1/Project/TestCircuit_5/Circuit_5_LIB.lib";
+	string cirFileName = "C:/Users/mosta/Desktop/AUC/DD1/Project/TestCircuit_5/Circuit_5_CIR.cir";
+	string stimFileName ="C:/Users/mosta/Desktop/AUC/DD1/Project/TestCircuit_5/Circuit_5_STIM.stim";
 
 
 
@@ -145,10 +151,11 @@ int main()
 					}
 					test.gates[i].inputs[j] = test.stim.status[k];
 					counter++;
-					if (counter == test.gates[i].inputs.size())
-					{
+				
 
 
+
+						bool temporayStore = test.gates[i].result;
 						/*for (int u = 0; u < test.gates[i].inputs.size(); u++)
 						{
 							cout << test.gates[i].inputs[u] << "  ";
@@ -158,10 +165,17 @@ int main()
 						test.stim.addInputVariable(test.gates[i].OutputName);
 						test.stim.addStatus(test.gates[i].result);
 						test.stim.addDelay(test.gates[i].timeStamp);
+						if (test.gates[i].result == temporayStore)
+						{
+							test.stim.changed.push_back(false);
+						}
+						else
+							test.stim.changed.push_back(true);
+				
 
-
-					}
-					break;
+						if (counter == test.gates[i].inputNames.size())
+							break;
+					
 				}
 			}
 			
@@ -182,13 +196,24 @@ int main()
 
 
 	ofstream fileOutput;
-	fileOutput.open("C:/Users/mosta/Desktop/AUC/DD1/Project/TestCircuit_2/Circuit_output.sim");
+	fileOutput.open("C:/Users/mosta/Desktop/AUC/DD1/Project/TestCircuit_5/Circuit_output.sim");
 
 		for (int i = 0; i < test.stim.Delay.size(); i++)
 		{
-			string store="";
-			store += to_string(test.stim.Delay[i]) + ", " + test.stim.inputVariables[i] + ", " +to_string(test.stim.status[i]);
-			fileOutput << store << endl;
+			if(test.stim.changed[i])
+			{
+				if(i<test.stim.Delay.size()-1)
+				{
+					if (test.stim.Delay[i] == test.stim.Delay[i + 1])
+					{
+						i++;
+					}
+	
+				}
+				string store = "";
+				store += to_string(test.stim.Delay[i]) + ", " + test.stim.inputVariables[i] + ", " + to_string(test.stim.status[i]);
+				fileOutput << store << endl;
+			}
 		}
 
 	//LogicGateExpressionEvaluator evaluate;
