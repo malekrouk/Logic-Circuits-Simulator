@@ -5,19 +5,50 @@ void FilesReading::ReadLibFile(string s)
 {
 	ifstream LibFile;
 	LibFile.open(s);
+
+	if (!LibFile.is_open())
+	{
+		cout << "error opening Lib file, please recheck the name ";
+		return;
+	}
+
 	while (!LibFile.eof())
 	{
 		string temp;
 		LibFile >> temp;
+		if (temp == "")  //if the file became empty(only have spaces or new lines
+		{
+			break;
+		}
+		//cout << temp << endl;
+
 		temp.erase(remove(temp.begin(), temp.end(), ','), temp.end());
 		FilesReading::Lib.addGateName(temp);
 		LibFile >> temp;
+		if (temp == "")  //if the file became empty(only have spaces or new lines
+		{
+			break;
+		}
+		//cout << temp << endl;
+
 		temp.erase(remove(temp.begin(), temp.end(), ','), temp.end());
 		Lib.addInputNum(stoi(temp));
 		LibFile >> temp;
+		if (temp == "")  //if the file became empty(only have spaces or new lines
+		{
+			break;
+		}
+		//cout << temp << endl;
+
 		temp.erase(remove(temp.begin(), temp.end(), ','), temp.end());
 		Lib.addLogic(temp);
 		LibFile >> temp;
+		if (temp == "")  //if the file became empty(only have spaces or new lines
+		{
+			break;
+		}
+		//cout << temp << endl;
+
 		temp.erase(remove(temp.begin(), temp.end(), ','), temp.end());
 		Lib.addDelay(stoi(temp));
 
@@ -30,13 +61,22 @@ void FilesReading::ReadCirFile(string s)
 {
 	ifstream CirFile;
 	CirFile.open(s);
+
+	if (!CirFile.is_open())
+	{
+		cout << "error opening Cir file, please recheck the name ";
+		return;
+	}
+
 	string temp;
 	getline(CirFile, temp);
+	//cout << temp << endl;
 	CirFile >> temp;
 
 	while (temp != "COMPONENTS:")
 	{
 		CirFile >> temp;
+	//	cout << temp << endl;
 		FilesReading::cir.addInput(temp[0]);
 	}
 
@@ -47,6 +87,7 @@ void FilesReading::ReadCirFile(string s)
 		LogicGate x;
 		int inputCounter = 1;
 		CirFile >> temp;
+		//cout << temp << endl;
 		temp.erase(remove(temp.begin(), temp.end(), ','), temp.end());
 
 		x.name = temp;
@@ -54,6 +95,7 @@ void FilesReading::ReadCirFile(string s)
 
 
 		CirFile >> temp;
+		//cout << temp << endl;
 		temp.erase(remove(temp.begin(), temp.end(), ','), temp.end());
 
 		if ((temp[temp.size() - 1] <= 57) && (temp[temp.size() - 1] >= 48))
@@ -68,6 +110,7 @@ void FilesReading::ReadCirFile(string s)
 			{
 				cir.logic.push_back(Lib.Logic[i]);
 				x.logic = Lib.Logic[i];
+				x.delay = Lib.Delay[i];
 				break;
 			}
 		}
@@ -76,6 +119,7 @@ void FilesReading::ReadCirFile(string s)
 
 		cir.addType(temp);
 		CirFile >> temp;
+		//cout << temp << endl;
 		temp.erase(remove(temp.begin(), temp.end(), ','), temp.end());
 
 		x.OutputName = temp;
@@ -106,6 +150,11 @@ void FilesReading::ReadStimFile(string s)
 {
 	ifstream FileOpen;
 	FileOpen.open(s);
+	if (!FileOpen.is_open())
+	{
+		cout << "error opening stim file, please recheck the name ";
+		return;
+	}
 	string temp;
 	while (!FileOpen.eof())
 	{
@@ -163,7 +212,7 @@ void FilesReading::PrintGates()
 		{
 			cout << gates[i].inputNames[j]<<"  ";
 		}
-		cout << "Output : " << gates[i].result;
+		cout << "Output : " << gates[i].result<<"  "<< "Gate Delay : "<<gates[i].delay<<"  Time Stamp : "<<gates[i].timeStamp;
 		cout << endl<<endl;
 	}
 
