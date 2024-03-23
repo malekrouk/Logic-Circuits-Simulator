@@ -7,7 +7,9 @@ using namespace std;
 
 
 // Merge function for StimStruct object based on Delay
-void merge(StimStruct& stim, int left, int mid, int right) {
+void merge(StimStruct& stim, int left, int mid, int right)           //Merge sort function edited by chat gpt to accomodate our specific needs in regards to vectors used
+
+{
 	int n1 = mid - left + 1; // Size of left subarray
 	int n2 = right - mid;     // Size of right subarray
 
@@ -73,7 +75,8 @@ void merge(StimStruct& stim, int left, int mid, int right) {
 }
 
 // Merge Sort function for StimStruct object based on Delay
-void mergeSort(StimStruct& stim, int left, int right) {
+void mergeSort(StimStruct& stim, int left, int right)                    //part of the merge sort algorithm
+{
 	if (left < right) {
 		// Find the middle point
 		int mid = left + (right - left) / 2;
@@ -87,7 +90,8 @@ void mergeSort(StimStruct& stim, int left, int right) {
 	}
 }
 
-void getLogic(LibStruct lib, LogicGate s)
+void getLogic(LibStruct lib, LogicGate s)            //function that uses Lib file struct to match the logic of a gate with one of the logic expressions in the lib file
+
 {
 	for (int i = 0; i < lib.GatesNames.size(); i++)
 	{
@@ -98,7 +102,7 @@ void getLogic(LibStruct lib, LogicGate s)
 	}
 }
 
-bool evaluateGate(string s, vector<bool> inp)
+bool evaluateGate(string s, vector<bool> inp)    //functiont that uses the gate evaluator to evaluate outputs based on a vector of inputs
 {
 	LogicGateExpressionEvaluator evaluate;
 	return evaluate.evaluateExpression(s, inp);
@@ -112,73 +116,86 @@ int main()
 
 
 	FilesReading test;
-	string libFileName = "C:/Users/mosta/Desktop/AUC/DD1/Project/TestCircuit_5/Circuit_5_LIB.lib";
+	string libFileName = "C:/Users/mosta/Desktop/AUC/DD1/Project/TestCircuit_5/Circuit_5_LIB.lib";    //file locations, make sure you change them to work on your machine
 	string cirFileName = "C:/Users/mosta/Desktop/AUC/DD1/Project/TestCircuit_5/Circuit_5_CIR.cir";
 	string stimFileName ="C:/Users/mosta/Desktop/AUC/DD1/Project/TestCircuit_5/Circuit_5_STIM.stim";
+	string OutName = "C:/Users/mosta/Desktop/AUC/DD1/Project/TestCircuit_5/Circuit_output.sim";      //the sim file that will be produced
 
 
 
 	test.ReadLibFile(libFileName);
-	test.ReadCirFile(cirFileName);
+	test.ReadCirFile(cirFileName);    //here the readFile class starts reading the files and storing data
 	test.ReadStimFile(stimFileName);
 
 
 	test.PrintLib();
-	test.PrintCir();
+	test.PrintCir();    //part of the debugging process, functions that displays whats stored in each file struct
 	test.PrintStim();
 	test.PrintGates();
 
 
 
 
-	for (int i = 0; i < test.gates.size(); i++)
+	for (int i = 0; i < test.gates.size(); i++)        //the main part of the program. This is used to evaluate each logic gate and decide its output and time stamp and stores them in their appropriate vectors
 	{
 		int counter = 0;
-		int maxDelay = INT_MIN;
-		for (int j = 0; j < test.gates[i].inputNames.size(); j++)
-		{
-		
+		int maxDelay = INT_MIN;   //integer to store the maximum delay of all the inputs
 
-			for (int k = 0; k < test.stim.inputVariables.size(); k++)
+		for (int j = 0; j < test.gates[i].inputNames.size(); j++)    //loop to go over all the gates
+		{
+
+
+			for (int k = 0; k < test.stim.inputVariables.size(); k++)    //loop that goes over all the known variable 
 			{
 
-				cout << test.gates[i].inputNames[j] << "    " << test.stim.inputVariables[k] << "  " << test.stim.status[k]<< endl;
-				if (test.gates[i].inputNames[j] == test.stim.inputVariables[k])
+				cout << test.gates[i].inputNames[j] << "    " << test.stim.inputVariables[k] << "  " << test.stim.status[k] << endl;     //part of the debugging process
+				if (test.gates[i].inputNames[j] == test.stim.inputVariables[k]) //if we find a matching input for the logic gate
 				{
 					if (test.stim.Delay[k] > maxDelay)
 					{
-						maxDelay = test.stim.Delay[k];
+						maxDelay = test.stim.Delay[k];        //we record the max delay
 					}
-					test.gates[i].inputs[j] = test.stim.status[k];
+					test.gates[i].inputs[j] = test.stim.status[k];  //we change the status of the logic gate input value
 					counter++;
-				
 
 
 
-						bool temporayStore = test.gates[i].result;
-						/*for (int u = 0; u < test.gates[i].inputs.size(); u++)
+
+					bool temporayStore = test.gates[i].result;
+					/*for (int u = 0; u < test.gates[i].inputs.size(); u++)
+					{
+						cout << test.gates[i].inputs[u] << "  ";
+					}*/
+					int StoreTime;                                                    //here we calculate the time stamp, evaluate the output and pushes them to their appropriate vectors
+					StoreTime = test.gates[i].timeStamp;
+					test.gates[i].timeStamp = maxDelay + test.gates[i].delay;
+					test.gates[i].result = evaluateGate(test.gates[i].logic, test.gates[i].inputs);
+					test.stim.addInputVariable(test.gates[i].OutputName);
+					test.stim.addStatus(test.gates[i].result);
+					test.stim.addDelay(test.gates[i].timeStamp);
+					if (test.gates[i].result == temporayStore)     //if the output didnt change, the corresponding change variable in the change vetor is set to false so we dont include it in sim file
+					{
+						test.stim.changed.push_back(false);
+					}
+					else
+						test.stim.changed.push_back(true);
+
+					if (((test.gates[i].timeStamp - test.gates[i].delay) < StoreTime) && (StoreTime != -1) && (test.gates[i].result != temporayStore))  //this is part of the second implementation, if the current
+					{                                                                                                         //interferes with an old output thats still processing the old one will be deleted
+						for (int l = test.stim.inputVariables.size() - 2; l >= 0; l--)
 						{
-							cout << test.gates[i].inputs[u] << "  ";
-						}*/
-						test.gates[i].timeStamp = maxDelay + test.gates[i].delay;
-						test.gates[i].result = evaluateGate(test.gates[i].logic, test.gates[i].inputs);
-						test.stim.addInputVariable(test.gates[i].OutputName);
-						test.stim.addStatus(test.gates[i].result);
-						test.stim.addDelay(test.gates[i].timeStamp);
-						if (test.gates[i].result == temporayStore)
-						{
-							test.stim.changed.push_back(false);
+							if (test.stim.inputVariables[l] == test.gates[i].OutputName)
+							{
+								//test.stim.changed[l] = false; //this is the implementation using the second way, remve the comment and it will work    
+							}
 						}
-						else
-							test.stim.changed.push_back(true);
-				
+					}
+					if (counter == test.gates[i].inputNames.size())
+						break;
 
-						if (counter == test.gates[i].inputNames.size())
-							break;
-					
 				}
 			}
-			
+
 		}
 	}
 
@@ -186,35 +203,38 @@ int main()
 	//test.PrintGates();
 
 
-	mergeSort(test.stim, 0, test.stim.Delay.size()-1);
+	mergeSort(test.stim, 0, test.stim.Delay.size() - 1);   //sorting the variables according to time stamp
 
 
-	for (int i = 0; i < test.stim.Delay.size(); i++)
+	for (int i = 0; i < test.stim.Delay.size(); i++)  //part of the debugging process
 	{
-		cout << test.stim.Delay[i] << ", " << test.stim.inputVariables[i] << ", "<<test.stim.status[i]<<endl;
+		cout << test.stim.Delay[i] << ", " << test.stim.inputVariables[i] << ", " << test.stim.status[i] << endl;
 	}
 
 
 	ofstream fileOutput;
-	fileOutput.open("C:/Users/mosta/Desktop/AUC/DD1/Project/TestCircuit_5/Circuit_output.sim");
+	fileOutput.open(OutName);
 
-		for (int i = 0; i < test.stim.Delay.size(); i++)
+	for (int i = 0; i < test.stim.Delay.size(); i++)
+	{
+		
+		
+		if (test.stim.changed[i])
 		{
-			if(test.stim.changed[i])
-			{
-				if(i<test.stim.Delay.size()-1)
+			if (i < test.stim.Delay.size() - 1)
+			{                                                                                                //if there 2 outputs at exactly the same time, take the one that was evaluated later
+				if ((test.stim.Delay[i] == test.stim.Delay[i + 1]) && (test.stim.inputVariables[i] == test.stim.inputVariables[i + 1]) && (test.stim.changed[i + 1]))
 				{
-					if (test.stim.Delay[i] == test.stim.Delay[i + 1])
-					{
-						i++;
-					}
-	
+					i++;
 				}
-				string store = "";
-				store += to_string(test.stim.Delay[i]) + ", " + test.stim.inputVariables[i] + ", " + to_string(test.stim.status[i]);
-				fileOutput << store << endl;
 			}
+
+			
+			string store = "";
+			store += to_string(test.stim.Delay[i]) + ", " + test.stim.inputVariables[i] + ", " + to_string(test.stim.status[i]);
+			fileOutput << store << endl;
 		}
+	}
 
 	//LogicGateExpressionEvaluator evaluate;
 	//
@@ -244,7 +264,7 @@ int main()
 		}
 	}*/
 
-	
+
 
 
 }
