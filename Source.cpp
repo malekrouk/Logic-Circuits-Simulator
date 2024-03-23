@@ -7,7 +7,8 @@ using namespace std;
 
 
 // Merge function for StimStruct object based on Delay
-void merge(StimStruct& stim, int left, int mid, int right) {
+void merge(StimStruct& stim, int left, int mid, int right)                 //
+{
 	int n1 = mid - left + 1; // Size of left subarray
 	int n2 = right - mid;     // Size of right subarray
 
