@@ -12,7 +12,7 @@ struct LogicGate
 	vector<string> inputNames;
 	vector<bool> inputs;
 	string OutputName;
-	bool result;
+	bool result = 0;
 	int timeStamp=-1;
 	int delay=-1;
 
@@ -107,6 +107,7 @@ struct StimStruct
 	vector<int> Delay;
 	vector<string> inputVariables;
 	vector<bool> status;
+	vector<bool> changed;
 	void addDelay(int x)
 	{
 		Delay.push_back(x);
