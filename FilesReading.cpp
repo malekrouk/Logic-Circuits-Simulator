@@ -108,7 +108,7 @@ void FilesReading::ReadLibFile(string s)  //function to read contents from a lib
            }
 
            if (!Digits2) {
-               cout<<"A proper digit is not entered in the input number for the gate "<<endl;
+               cout<<"A proper digit is not entered for the delay in lib file "<<endl;
                exit;
            }
 
@@ -242,7 +242,7 @@ void FilesReading::ReadStimFile(string s)  //function to read the contents of a 
         }
 
         if (Digits3) {
-            cout<<"A proper digit is not entered in the input number for the gate "<<endl;
+            cout<<"A proper digit is not entered for the delay in stim file "<<endl;
             exit;
         }
 		stim.addDelay(stoi(temp));

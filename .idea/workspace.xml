@@ -10,10 +10,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="273037d3-34aa-4aef-b890-d5eb5e38e78d" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/GateSimulator.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/FilesReading.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/FilesReading.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/GateSimulator.h" beforeDir="false" afterPath="$PROJECT_DIR$/GateSimulator.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source.cpp" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -51,7 +49,7 @@
     "RunOnceActivity.readMode.enableVisualFormatting": "true",
     "cf.first.check.clang-format": "false",
     "cidr.known.project.marker": "true",
-    "git-widget-placeholder": "Mostafa's__Branch",
+    "git-widget-placeholder": "Malek's-Branch",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
@@ -84,6 +82,7 @@
       <workItem from="1710427425305" duration="9052000" />
       <workItem from="1710697649529" duration="3804000" />
       <workItem from="1711427956189" duration="8181000" />
+      <workItem from="1711579767430" duration="176000" />
     </task>
     <servers />
   </component>
