@@ -1,3 +1,4 @@
+<<<<<<< Updated upstream
 #include <iostream>
 #include <stack>
 #include <string>
@@ -180,3 +181,10 @@ int main() {
 
     return 0;
 }
+=======
+//
+// Created by Malek farouk on 27/03/2024.
+//
+
+#include "GateSimulator.h"
+>>>>>>> Stashed changes
