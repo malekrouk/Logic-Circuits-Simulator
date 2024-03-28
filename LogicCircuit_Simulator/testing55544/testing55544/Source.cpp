@@ -35,7 +35,7 @@ int main()
 	FilesReading test;
 	string libFileName = "C:/Users/mosta/Desktop/AUC/DD1/Project/cells.lib";    //file locations, make sure you change them to work on your machine
 	string cirFileName = "C:/Users/mosta/Desktop/AUC/DD1/Project/1.cir";
-	string stimFileName = "C:/Users/mosta/Desktop/AUC/DD1/Project/1.stim";
+	string stimFileName = "C:/Users/mosta/Desktop/AUC/DD1/Project/2.stim";
 	string OutName = "C:/Users/mosta/Desktop/AUC/DD1/Project/Circuit_output.sim";      //the sim file that will be produced
 
 
