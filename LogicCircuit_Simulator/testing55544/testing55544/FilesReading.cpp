@@ -298,6 +298,8 @@ void FilesReading::ReadStimFile(string s)  //function to read the contents of a 
 			  stim.addEvent(error);
 		}
 		stim.addEvent(x);
+		if (x.Name != "0")
+		finalEvents.push(x);
 
 	}
 
